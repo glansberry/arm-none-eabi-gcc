@@ -5,7 +5,7 @@ MPFR_VERSION=3.1.1
 MPC_VERSION=1.0
 ISL_VERSION=0.10
 CLOOG_VERSION=0.17.0
-PPL_VERSION=0.11
+PPL_VERSION=0.12.1
 
 BINUTILS_VERSION=2.22.51
 GCC_VERSION=4.7.2
@@ -35,7 +35,7 @@ ARM_TARGET=arm-none-eabi
 PROGRAM_PREFIX=$ARM_TARGET-
 ARM_OPTIONS="$SHARED_OPTIONS --target=$ARM_TARGET --with-newlib --without-headers --with-float=soft --disable-shared --disable-interwork --disable-libssp --with-sysroot=$INSTALL_DIR/$ARM_TARGET --program-prefix=$PROGRAM_PREFIX --with-cpu=cortex-m3 --with-mode=thumb --with-tune=cortex-m3"
 
-PC_TARGET=x86_64-pc-mingw32
+PC_TARGET=x86_64-linux-gnu
 PROGRAM_PREFIX=$PC_TARGET-
 PC_OPTIONS="$SHARED_OPTIONS --target=$PC_TARGET --with-sysroot=$INSTALL_DIR/$PC_TARGET --enable-poison-system-directories --program-prefix=$PROGRAM_PREFIX"
 
@@ -73,14 +73,69 @@ echo "Building ISL, required by GCC"
 "$BUILD" "$INSTALL_DIR/src/isl-$ISL_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR && make ${PARALLELISM} install"
 
 echo "Building PPL, required by CLOOG"
+# Skip building demos dir, avoiding a compilation error
+sed -i "s/ demos / /" "$INSTALL_DIR/src/ppl-$PPL_VERSION/Makefile.in"
 echo "The build may hang 'checking if the compiler has the remainder bug'. Kill the conftest.exe process to continue."
-"$BUILD" "$INSTALL_DIR/src/ppl-$PPL_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR --with-isl=system --with-bits=gmp && make ${PARALLELISM} install"
+"$BUILD" "$INSTALL_DIR/src/ppl-$PPL_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR --with-isl=system --with-bits=gmp && make ${PARALLELISM} install"
 
 echo "Building CLOOG, required by GCC"
 "$BUILD" "$INSTALL_DIR/src/cloog-$CLOOG_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR --with-isl=system --with-bits=gmp --with-polylib=system --with-polylib-prefix=$INSTALL_DIR && make ${PARALLELISM} install"
 
 echo "Building libexpat, an xml parsing library required by GDB"
 "$BUILD" "$INSTALL_DIR/src/expat-$EXPAT_VERSION" "./configure --prefix=$INSTALL_DIR && make ${PARALLELISM} install"
+
+# patch work/src/gcc-4.7.2/gcc/tree.h - thread_local is now a keyword
+sed -i 's/unsigned thread_local /unsigned is_thread_local /' $INSTALL_DIR/src/gcc-4.7.2/gcc/tree.h
+
+# patch cfns.h and cfns.gperf to fix:
+# cfns.gperf:101:1: error: ‘const char* libc_name_p(const char*, unsigned int)’ redeclared inline with ‘gnu_inline’ attribute
+grep __GNUC_STDC_INLINE__ ${INSTALL_DIR}/src/gcc-4.7.2/gcc/cp/cfns.gperf || (patch -d "${INSTALL_DIR}/src/gcc-4.7.2" -p1 <<EOF
+--- a/gcc/cp/cfns.gperf	2020-12-28 15:57:35.466266717 -0500
++++ b/gcc/cp/cfns.gperf	2020-12-28 15:59:45.802489931 -0500
+@@ -21,8 +21,12 @@
+ #endif
+ static unsigned int hash (const char *, unsigned int);
+ #ifdef __GNUC__
++#ifdef __GNUC_STDC_INLINE__
++__attribute__ ((__gnu_inline__))
++#else
+ __inline
+ #endif
++#endif
+ const char * libc_name_p (const char *, unsigned int);
+ %}
+ %%
+--- a/gcc/cp/cfns.h	2020-12-28 15:57:25.530249800 -0500
++++ b/gcc/cp/cfns.h	2020-12-28 15:59:26.106456057 -0500
+@@ -48,11 +48,11 @@
+ along with GCC; see the file COPYING3.  If not see
+ <http://www.gnu.org/licenses/>.  */
+ #ifdef __GNUC__
++#ifdef __GNUC_STDC_INLINE__
++__attribute__ ((__gnu_inline__))
++#else
+ __inline
+ #endif
+-static unsigned int hash (const char *, unsigned int);
+-#ifdef __GNUC__
+-__inline
+ #endif
+ const char * libc_name_p (const char *, unsigned int);
+ /* maximum key range = 391, duplicates = 0 */
+@@ -123,9 +123,10 @@
+ }
+
+ #ifdef __GNUC__
+-__inline
+ #ifdef __GNUC_STDC_INLINE__
+ __attribute__ ((__gnu_inline__))
++#else
++__inline
+ #endif
+ #endif
+ const char *
+EOF
+)
 
 # ARM build
 "$BUILD_GCC" "$INSTALL_DIR" "$ARM_TARGET" "$PARALLELISM" "$ARM_OPTIONS" "$BINUTILS_VERSION" "$GCC_VERSION" "$NEWLIB_VERSION" "$GDB_VERSION" "$NEWLIB_CFLAGS_FOR_TARGET" "-mcpu=cortex-m3 -mthumb -D__thumb2__"

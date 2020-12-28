@@ -21,7 +21,12 @@ BUILD="$DIR/build"
 echo "bootsrap GCC"
 GCC_CFLAGS="-fpermissive -Dffs=__builtin_ffs -v -fPIC"
 GCC_CXXFLAGS="$GCC_CFLAGS"
-"$BUILD" "$INSTALL_DIR/src/$TARGET/gcc-$GCC_VERSION" "CFLAGS=\"$GCC_CFLAGS\" CXXFLAGS=\"$GCC_CXXFLAGS\" ../../gcc-$GCC_VERSION/configure $OPTIONS && make ${PARALLELISM} all-gcc && make install-gcc"
+"$BUILD" "$INSTALL_DIR/src/$TARGET/gcc-$GCC_VERSION" "CFLAGS=\"$GCC_CFLAGS\" CXXFLAGS=\"$GCC_CXXFLAGS\" ../../gcc-$GCC_VERSION/configure $OPTIONS && make MAKEINFO=true ${PARALLELISM} all-gcc && make MAKEINFO=true install-gcc"
+
+
+# While building newlib and others, we need to locate our cross-compiler, bintools and libs
+export PATH=$INSTALL_DIR/bin:${PATH}
+export LD_LIBRARY_PATH=$INSTALL_DIR/lib:${LD_LIBRARY_PATH}
 
 NEWLIB_OPTIONS="--enable-newlib-io-long-long --enable-newlib-register-fini --disable-newlib-supplied-syscalls --disable-libgloss --disable-nls"
 "$BUILD" "$INSTALL_DIR/src/$TARGET/newlib-$NEWLIB_VERSION" "../../newlib-$NEWLIB_VERSION/configure $OPTIONS $NEWLIB_OPTIONS && make ${PARALLELISM} CFLAGS_FOR_TARGET=\"$NEWLIB_CFLAGS_FOR_TARGET\" CCASFLAGS=\"$NEWLIB_CCASFLAGS\" && make install"
@@ -38,12 +43,13 @@ then
   cd $INSTALL_DIR/src/$TARGET/gcc-$GCC_VERSION
   if [ ! -e "$INSTALL_DIR/src/$TARGET/gcc-$GCC_VERSION-final-built" ]
   then
-    make ${PARALLELISM} all
+    make MAKEINFO=true ${PARALLELISM} all
   fi
-  make install
+  make MAKEINFO=true install
   touch "$INSTALL_DIR/src/$TARGET/gcc-$GCC_VERSION-final-installed"
 else
   echo "skipping final GCC build, because it is already installed"
 fi
 
-"$BUILD" "$INSTALL_DIR/src/$TARGET/gdb-$GDB_VERSION" "../../gdb-$GDB_VERSION/configure --prefix=$INSTALL_DIR --target=$TARGET && make ${PARALLELISM} all && make install"
+# Skip gdb - it's not working off the bat
+# "$BUILD" "$INSTALL_DIR/src/$TARGET/gdb-$GDB_VERSION" "../../gdb-$GDB_VERSION/configure --prefix=$INSTALL_DIR --target=$TARGET && make MAKEINFO=true ${PARALLELISM} all && make MAKEINFO=true install"
