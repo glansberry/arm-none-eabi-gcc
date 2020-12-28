@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Quit the script when the first command fails.
-set -e
+set -e -o pipefail -x
 
 TAR=/bin/tar
 CURL="/c/Program Files (x86)/Git/bin/curl"

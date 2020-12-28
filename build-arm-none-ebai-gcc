@@ -15,6 +15,9 @@ EXPAT_VERSION=2.1.0
 
 PARALLELISM=8
 
+# Quit the script when the first command fails.
+set -e -o pipefail -x
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 DOWNLOAD="$DIR/details/download"
@@ -37,9 +40,6 @@ PROGRAM_PREFIX=$PC_TARGET-
 PC_OPTIONS="$SHARED_OPTIONS --target=$PC_TARGET --with-sysroot=$INSTALL_DIR/$PC_TARGET --enable-poison-system-directories --program-prefix=$PROGRAM_PREFIX"
 
 NEWLIB_CFLAGS_FOR_TARGET="-DMALLOC_PROVIDED -DREENTRANT_SYSCALLS_PROVIDED -D__DYNAMIC_REENT__ -ffunction-sections -fdata-sections -DPREFER_SIZE_OVER_SPEED -D__OPTIMIZE_SIZE__ -Os -fomit-frame-pointer -mcpu=cortex-m3 -mthumb -D__thumb2__ -D__BUFSIZ__=256"
-
-# Quit the script when the first command fails.
-set -e
 
 # Download sources
 mkdir --parents $INSTALL_DIR/src
