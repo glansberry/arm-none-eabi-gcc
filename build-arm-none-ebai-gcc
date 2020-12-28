@@ -13,7 +13,7 @@ GDB_VERSION=7.5
 NEWLIB_VERSION=1.20.0
 EXPAT_VERSION=2.1.0
 
-PARALLELISM=8
+PARALLELISM=-j8
 
 # Quit the script when the first command fails.
 set -e -o pipefail -x
@@ -61,26 +61,26 @@ https://www.bugseng.com/products/ppl/download/ftp/releases/$PPL_VERSION/ppl-$PPL
 END
 
 echo "Building gmp, an arbitrary precision arithmetic library required by GCC"
-"$BUILD" "$INSTALL_DIR/src/gmp-$GMP_VERSION" "./configure --prefix=$INSTALL_DIR --enable-cxx --enable-static --disable-shared && make install"
+"$BUILD" "$INSTALL_DIR/src/gmp-$GMP_VERSION" "./configure --prefix=$INSTALL_DIR --enable-cxx --enable-static --disable-shared && make ${PARALLELISM} install"
 
 echo "Building MPFR, a multiple precision floating point library required by GCC"
-"$BUILD" "$INSTALL_DIR/src/mpfr-$MPFR_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR --enable-static --disable-shared && make install"
+"$BUILD" "$INSTALL_DIR/src/mpfr-$MPFR_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR --enable-static --disable-shared && make ${PARALLELISM} install"
 
 echo "Building MPC, an arbitrary precision complex number library required by GCC"
-"$BUILD" "$INSTALL_DIR/src/mpc-$MPC_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR --with-mpfr=$INSTALL_DIR --enable-static --disable-shared && make install"
+"$BUILD" "$INSTALL_DIR/src/mpc-$MPC_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR --with-mpfr=$INSTALL_DIR --enable-static --disable-shared && make ${PARALLELISM} install"
 
 echo "Building ISL, required by GCC"
-"$BUILD" "$INSTALL_DIR/src/isl-$ISL_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR && make install"
+"$BUILD" "$INSTALL_DIR/src/isl-$ISL_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR && make ${PARALLELISM} install"
 
 echo "Building PPL, required by CLOOG"
 echo "The build may hang 'checking if the compiler has the remainder bug'. Kill the conftest.exe process to continue."
-"$BUILD" "$INSTALL_DIR/src/ppl-$PPL_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR --with-isl=system --with-bits=gmp --enable-static --disable-shared && make install"
+"$BUILD" "$INSTALL_DIR/src/ppl-$PPL_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR --with-isl=system --with-bits=gmp && make ${PARALLELISM} install"
 
 echo "Building CLOOG, required by GCC"
-"$BUILD" "$INSTALL_DIR/src/cloog-$CLOOG_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR --with-isl=system --with-bits=gmp --with-polylib=system --with-polylib-prefix=$INSTALL_DIR && make install"
+"$BUILD" "$INSTALL_DIR/src/cloog-$CLOOG_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR --with-isl=system --with-bits=gmp --with-polylib=system --with-polylib-prefix=$INSTALL_DIR && make ${PARALLELISM} install"
 
 echo "Building libexpat, an xml parsing library required by GDB"
-"$BUILD" "$INSTALL_DIR/src/expat-$EXPAT_VERSION" "./configure --prefix=$INSTALL_DIR && make install"
+"$BUILD" "$INSTALL_DIR/src/expat-$EXPAT_VERSION" "./configure --prefix=$INSTALL_DIR && make ${PARALLELISM} install"
 
 # ARM build
 "$BUILD_GCC" "$INSTALL_DIR" "$ARM_TARGET" "$PARALLELISM" "$ARM_OPTIONS" "$BINUTILS_VERSION" "$GCC_VERSION" "$NEWLIB_VERSION" "$GDB_VERSION" "$NEWLIB_CFLAGS_FOR_TARGET" "-mcpu=cortex-m3 -mthumb -D__thumb2__"
