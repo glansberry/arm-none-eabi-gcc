@@ -13,9 +13,15 @@ GDB_VERSION=7.5
 NEWLIB_VERSION=1.20.0
 EXPAT_VERSION=2.1.0
 
-INSTALL_DIR=/opt/gnu/gcc-$GCC_VERSION
-
 PARALLELISM=8
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+DOWNLOAD="$DIR/details/download"
+BUILD="$DIR/details/build"
+BUILD_GCC="$DIR/details/build-gcc"
+
+INSTALL_DIR="$DIR/work"
 
 PATH=$(echo $PATH | sed -e 's;\(^\.:\|:\.$\|:\.\(:\)\);\2;g')
 echo "PATH=$PATH"
@@ -29,11 +35,6 @@ ARM_OPTIONS="$SHARED_OPTIONS --target=$ARM_TARGET --with-newlib --without-header
 PC_TARGET=x86_64-pc-mingw32
 PROGRAM_PREFIX=$PC_TARGET-
 PC_OPTIONS="$SHARED_OPTIONS --target=$PC_TARGET --with-sysroot=$INSTALL_DIR/$PC_TARGET --enable-poison-system-directories --program-prefix=$PROGRAM_PREFIX"
-
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-DOWNLOAD="$DIR/details/download"
-BUILD="$DIR/details/build"
-BUILD_GCC="$DIR/details/build-gcc"
 
 NEWLIB_CFLAGS_FOR_TARGET="-DMALLOC_PROVIDED -DREENTRANT_SYSCALLS_PROVIDED -D__DYNAMIC_REENT__ -ffunction-sections -fdata-sections -DPREFER_SIZE_OVER_SPEED -D__OPTIMIZE_SIZE__ -Os -fomit-frame-pointer -mcpu=cortex-m3 -mthumb -D__thumb2__ -D__BUFSIZ__=256"
 
