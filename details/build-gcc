@@ -19,7 +19,7 @@ BUILD="$DIR/build"
 "$BUILD" "$INSTALL_DIR/src/$TARGET/binutils-$BINUTILS_VERSION" "../../binutils-$BINUTILS_VERSION/configure $OPTIONS && make ${PARALLELISM} && make install"
 
 echo "bootsrap GCC"
-GCC_CFLAGS="-fpermissive -Dffs=__builtin_ffs -v"
+GCC_CFLAGS="-fpermissive -Dffs=__builtin_ffs -v -fPIC"
 GCC_CXXFLAGS="$GCC_CFLAGS"
 "$BUILD" "$INSTALL_DIR/src/$TARGET/gcc-$GCC_VERSION" "CFLAGS=\"$GCC_CFLAGS\" CXXFLAGS=\"$GCC_CXXFLAGS\" ../../gcc-$GCC_VERSION/configure $OPTIONS && make ${PARALLELISM} all-gcc && make install-gcc"
 

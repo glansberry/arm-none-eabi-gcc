@@ -61,13 +61,13 @@ https://www.bugseng.com/products/ppl/download/ftp/releases/$PPL_VERSION/ppl-$PPL
 END
 
 echo "Building gmp, an arbitrary precision arithmetic library required by GCC"
-"$BUILD" "$INSTALL_DIR/src/gmp-$GMP_VERSION" "./configure --prefix=$INSTALL_DIR --enable-cxx --enable-static --disable-shared && make ${PARALLELISM} install"
+"$BUILD" "$INSTALL_DIR/src/gmp-$GMP_VERSION" "./configure --prefix=$INSTALL_DIR --enable-cxx && make ${PARALLELISM} install"
 
 echo "Building MPFR, a multiple precision floating point library required by GCC"
-"$BUILD" "$INSTALL_DIR/src/mpfr-$MPFR_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR --enable-static --disable-shared && make ${PARALLELISM} install"
+"$BUILD" "$INSTALL_DIR/src/mpfr-$MPFR_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR && make ${PARALLELISM} install"
 
 echo "Building MPC, an arbitrary precision complex number library required by GCC"
-"$BUILD" "$INSTALL_DIR/src/mpc-$MPC_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR --with-mpfr=$INSTALL_DIR --enable-static --disable-shared && make ${PARALLELISM} install"
+"$BUILD" "$INSTALL_DIR/src/mpc-$MPC_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=$INSTALL_DIR --with-mpfr=$INSTALL_DIR && make ${PARALLELISM} install"
 
 echo "Building ISL, required by GCC"
 "$BUILD" "$INSTALL_DIR/src/isl-$ISL_VERSION" "./configure --prefix=$INSTALL_DIR --with-gmp=system --with-gmp-prefix=$INSTALL_DIR && make ${PARALLELISM} install"
