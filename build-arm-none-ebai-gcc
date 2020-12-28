@@ -48,16 +48,16 @@ cd $INSTALL_DIR/src
 # We can have at most 3 simultaneous downloads from gnu.org.
 xargs -n 1 -P 3 "$DOWNLOAD" <<END
 ftp://sourceware.org/pub/binutils/snapshots/binutils-$BINUTILS_VERSION.tar.bz2
-ftp://sources.redhat.com/pub/newlib/newlib-$NEWLIB_VERSION.tar.gz
+ftp://sourceware.org/pub/newlib/newlib-$NEWLIB_VERSION.tar.gz
 http://sourceforge.net/projects/expat/files/expat/2.1.0/expat-$EXPAT_VERSION.tar.gz
 ftp://ftp.gmplib.org/pub/gmp-$GMP_VERSION/gmp-$GMP_VERSION.tar.bz2
-http://www.mpfr.org/mpfr-current/mpfr-$MPFR_VERSION.tar.bz2
-http://www.multiprecision.org/mpc/download/mpc-$MPC_VERSION.tar.gz
+https://ftp.gnu.org/gnu/mpfr/mpfr-$MPFR_VERSION.tar.bz2
+http://repository.timesys.com/buildsources/m/mpc/mpc-$MPC_VERSION/mpc-$MPC_VERSION.tar.gz
 ftp://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.bz2
 ftp://ftp.gnu.org/gnu/gdb/gdb-$GDB_VERSION.tar.bz2
-ftp://gcc.gnu.org/pub/gcc/infrastructure/isl-$ISL_VERSION.tar.bz2
-ftp://gcc.gnu.org/pub/gcc/infrastructure/cloog-$CLOOG_VERSION.tar.gz
-ftp://gcc.gnu.org/pub/gcc/infrastructure/ppl-$PPL_VERSION.tar.gz
+http://repository.timesys.com/buildsources/i/isl/isl-$ISL_VERSION/isl-$ISL_VERSION.tar.bz2
+http://repository.timesys.com/buildsources/c/cloog/cloog-$CLOOG_VERSION/cloog-$CLOOG_VERSION.tar.gz
+https://www.bugseng.com/products/ppl/download/ftp/releases/$PPL_VERSION/ppl-$PPL_VERSION.tar.gz
 END
 
 echo "Building gmp, an arbitrary precision arithmetic library required by GCC"
