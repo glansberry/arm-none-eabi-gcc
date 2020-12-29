@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Quit the script when the first command fails.
-set -e
+set -e -o pipefail -x
 
 TAR=/bin/tar
-CURL="/c/Program Files (x86)/Git/bin/curl"
-BASENAME=/bin/basename
+CURL=/usr/bin/curl
+BASENAME=/usr/bin/basename
 BUNZIP2=/bin/bunzip2
 GUNZIP=/bin/gunzip
 
-PATH="$1"
-FILE=`"$BASENAME" "$PATH"`
+URL="$1"
+FILE=`"$BASENAME" "$URL"`
 EXT="${FILE##*.}"
 BASE="${FILE%.*}"
 BBASE="${BASE%.*}"
@@ -24,8 +24,8 @@ fi
 
 if [ ! -e "$BBASE" ]
 then
-  echo "fetching $PATH"
-  "$CURL" --location --silent --show-error "$PATH" | "$UNCOMPRESS" --stdout | "$TAR" xf - || echo "failed to fetch $PATH"
+  echo "fetching $URL"
+  "$CURL" --location --silent --show-error "$URL" | "$UNCOMPRESS" --stdout | "$TAR" xf - || echo "failed to fetch $URL"
 else
-  echo "skipping $PATH because it was already fetched"
+  echo "skipping $URL because it was already fetched"
 fi

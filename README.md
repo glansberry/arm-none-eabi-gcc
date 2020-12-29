@@ -3,10 +3,10 @@ is a pain to set up if you are stuck on a Windows PC. Mentor Graphics provides
 an
 [ARM build of GCC.](http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/)
 Embedded systems often require customization to details like heap allocation
-and C++ exceptions. This project is a bash script for building a GCC
+and C++ exceptions. This project is port back to linux (18.02 with gcc 4.8.5) of  a bash script for building a GCC
 cross-compiler on a [MinGW](http://mingw.org/) host. The compiler targets
 arm-non-eabi with the thumb2 instruction set. This configuration is used for
-development on the ARM Cortex-M3 architecture.
+development on the ARM Cortex-M3 architecture. 
 
 To use this script:
 1. git clone git@github.com:joshuanapoli/arm-none-eabi-gcc.git
