@@ -51,5 +51,4 @@ else
   echo "skipping final GCC build, because it is already installed"
 fi
 
-# Skip gdb - it's not working off the bat
-# "$BUILD" "$INSTALL_DIR/src/$TARGET/gdb-$GDB_VERSION" "../../gdb-$GDB_VERSION/configure --prefix=$INSTALL_DIR --target=$TARGET && make MAKEINFO=true ${PARALLELISM} all && make MAKEINFO=true install"
+"$BUILD" "$INSTALL_DIR/src/$TARGET/gdb-$GDB_VERSION" "../../gdb-$GDB_VERSION/configure --prefix=$INSTALL_DIR --target=$TARGET && make MAKEINFO=true ${PARALLELISM} all && make MAKEINFO=true install"

@@ -13,7 +13,7 @@ GDB_VERSION=7.5
 NEWLIB_VERSION=1.20.0
 EXPAT_VERSION=2.1.0
 
-PARALLELISM=-j8
+PARALLELISM=-j4
 
 # Quit the script when the first command fails.
 set -e -o pipefail -x
@@ -24,7 +24,7 @@ DOWNLOAD="$DIR/details/download"
 BUILD="$DIR/details/build"
 BUILD_GCC="$DIR/details/build-gcc"
 
-INSTALL_DIR="$DIR/work"
+INSTALL_DIR="/opt/gnu/gcc-4.7.2/"
 
 PATH=$(echo $PATH | sed -e 's;\(^\.:\|:\.$\|:\.\(:\)\);\2;g')
 echo "PATH=$PATH"
